@@ -15,14 +15,12 @@ mdlp.rank <- function (x, y, method = "kendall")
   
   y <- trans.ranking(y, method)
   
-  cores <- ifelse(Sys.info()['sysname']=="Windows",1,detectCores())
-  
   cutp <- mcmapply(function(i) {
     x <- x[, i, drop=FALSE]
     sort(cutPoints.rank(x, y))
   }, 1:p,
   SIMPLIFY = FALSE,
-  mc.cores = cores
+  mc.cores = ifelse(Sys.info()['sysname']=="Windows",1,detectCores())
   )
   
   xd <- sapply(1:ncol(x), function(j){
