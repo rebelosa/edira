@@ -4,6 +4,7 @@
 # Author: claudio rebelo sa
 ###############################################################################
 
+require("parallel")
 #x - Matrix with independent variables
 #y - Matrix with Rankings
 #method - Similarity method ("kendall" or "spearman")
@@ -14,12 +15,14 @@ mdlp.rank <- function (x, y, method = "kendall")
   
   y <- trans.ranking(y, method)
   
+  cores <- ifelse(Sys.info()['sysname']=="Windows",1,detectCores())
+  
   cutp <- mcmapply(function(i) {
     x <- x[, i, drop=FALSE]
     sort(cutPoints.rank(x, y))
   }, 1:p,
   SIMPLIFY = FALSE,
-  mc.cores = detectCores()
+  mc.cores = cores
   )
   
   xd <- sapply(1:ncol(x), function(j){
